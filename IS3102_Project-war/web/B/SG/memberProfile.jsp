@@ -37,7 +37,7 @@
                 var myWindow = window.open("pdpa.html");
             }
         </script>
-     
+        
         <jsp:include page="menu2.jsp" />
         <div role="main" class="main">
             <section class="page-top">
@@ -49,6 +49,7 @@
                     </div>
                 </div>
             </section>
+       
             <div class="container">
                 <%%>
                 <jsp:include page="/displayMessageLong.jsp" />

@@ -27,6 +27,7 @@
                 }
                 return ok;
             }
+              
         </script>
         <jsp:include page="menu2.jsp" />
         <div role="main" class="main">

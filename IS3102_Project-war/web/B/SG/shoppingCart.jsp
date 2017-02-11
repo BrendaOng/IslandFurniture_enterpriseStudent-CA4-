@@ -128,6 +128,7 @@
                                                             try {
                                                                 if (shoppingCart != null && shoppingCart.size() > 0) {
                                                                     //for (ShoppingCartLineItem item : shoppingCart) {
+                                                                    for(int x=0; x<shoppingCart.size();x++){
                                                         %>
                                                         <tr class="cart_table_item">
                                                             <td class="product-remove">
@@ -135,33 +136,33 @@
                                                             </td>
                                                             <td class="product-thumbnail">
                                                                 <a href="furnitureProductDetails.jsp">
-                                                                    <img width="100" height="100" alt="" class="img-responsive" src="../../..<%=ImageURL()%>">
+                                                                    <img width="100" height="100" alt="" class="img-responsive" src="../../..<%=shoppingCart.get(x).getImageURL()%>">
                                                                 </a>
                                                             </td>
                                                             <td class="product-name">
-                                                                <a class="productDetails" href="furnitureProductDetails.jsp">Insert product name</a>
+                                                                <a class="productDetails" href="furnitureProductDetails.jsp"><%=shoppingCart.get(x).getName()%></a>
                                                             </td>
                                                             <td class="product-price">
-                                                                $<span class="amount" id="price<%=SKU()%>">
-                                                                    insert price here
+                                                                $<span class="amount" id="price<%=shoppingCart.get(x).getSKU()%>">
+                                                                    <%=shoppingCart.get(x).getPrice()%>
                                                                 </span>
                                                             </td>
                                                             <td class="product-quantity">
                                                                 <form enctype="multipart/form-data" method="post" class="cart">
                                                                     <div class="quantity">
-                                                                        <input type="button" class="minus" value="-" onclick="minus('<%=SKU()%>')">
-                                                                        <input type="text" disabled="true" class="input-text qty text" title="Qty" value="" name="quantity" min="1" step="1" id="<%=SKU()%>">
-                                                                        <input type="button" class="plus" value="+" onclick="plus('<%=SKU()%>', '<%=Name()%>',<%=Price()%>, '<%=ImageURL()%>')">
+                                                                        <input type="button" class="minus" value="-" onclick="minus('<%=shoppingCart.get(x).getSKU()%>')">
+                                                                        <input type="text" disabled="true" class="input-text qty text" title="Qty" value="" name="quantity" min="1" step="1" id="<%=shoppingCart.get(x).getSKU()%>">
+                                                                        <input type="button" class="plus" value="+" onclick="plus('<%=shoppingCart.get(x).getSKU()%>', '<%=shoppingCart.get(x).getName()%>',<%=shoppingCart.get(x).getPrice()%>, '<%=shoppingCart.get(x).getImageURL()%>')">
                                                                     </div>
                                                                 </form>
                                                             </td>
                                                             <td class="product-subtotal">
-                                                                $<span class="amount" id="totalPrice<%=SKU()%>">
+                                                                $<span class="amount" id="totalPrice<%=shoppingCart.get(x).getSKU()%>">
                                                                     insert total price here
                                                                 </span>
                                                             </td>
                                                         </tr>
-                                                        <%                                                                 //   }
+                                                        <%                 }                                                //   }
                                                                 }
                                                             } catch (Exception ex) {
                                                                 System.out.println(ex);
@@ -331,3 +332,4 @@
         </div>
     </body>
 </html>
+

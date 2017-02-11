@@ -37,6 +37,9 @@ public class ECommerce_MemberEditProfileServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
+    //private String result;
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -60,7 +63,7 @@ public class ECommerce_MemberEditProfileServlet extends HttpServlet {
             //if(password.equals(rePassword)){
                 Client client = ClientBuilder.newClient();
             WebTarget target = client
-                    .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.memberentity").path("updateMember")
+                    .target("http://localhost:8080/WebService_Student-CA4-/webresources/entity.memberentity").path("updateMember")
                     .queryParam("name", name)
                     .queryParam("email", email)
                     .queryParam("phone", phone)
@@ -79,7 +82,8 @@ public class ECommerce_MemberEditProfileServlet extends HttpServlet {
 
             //out.print(member);
             //session.setAttribute("member", member);
-            response.sendRedirect("ECommerce_GetMember?msg=UpdateSuccess");
+            //result = "Account update successful";
+            response.sendRedirect("ECommerce_GetMember?msg");
            // }
 //            else{
 //                 response.sendRedirect("ECommerce_GetMember?msg=error");

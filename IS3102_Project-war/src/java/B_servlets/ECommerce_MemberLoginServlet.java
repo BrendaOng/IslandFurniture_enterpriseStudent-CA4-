@@ -39,9 +39,11 @@ public class ECommerce_MemberLoginServlet extends HttpServlet {
             response.addCookie(cookie);
 
             HttpSession session = request.getSession();
-
+//            out.println("email--->"+email);            
+//            out.println("password--->"+password);
             String memberEmail = loginMember(email, password);
 
+           // out.println("memberEmail--->"+memberEmail);
             if (memberEmail != null) {
                 List<CountryEntity> countries = facilityManagementBean.getListOfCountries();
                 session.setAttribute("countries", countries);
@@ -62,7 +64,7 @@ public class ECommerce_MemberLoginServlet extends HttpServlet {
     public String loginMember(String email, String password) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client
-                .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.memberentity").path("login")
+                .target("http://localhost:8080/WebService_Student-CA4-/webresources/entity.memberentity").path("login")
                 .queryParam("email", email)
                 .queryParam("password", password);
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
