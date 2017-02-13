@@ -1,3 +1,5 @@
+<%@page import="java.util.regex.Matcher"%>
+<%@page import="java.util.regex.Pattern"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="HelperClasses.ShoppingCartLineItem"%>
 <%@page import="EntityManager.WishListEntity"%>
@@ -69,6 +71,8 @@
                 $("#makePaymentForm").show("slow", function () {
                 });
             }
+
+
             function makePayment() {
                 window.event.returnValue = true;
                 document.makePaymentForm.action = "../../ECommerce_PaymentServlet";
@@ -127,42 +131,42 @@
                                                         <%ArrayList<ShoppingCartLineItem> shoppingCart = (ArrayList<ShoppingCartLineItem>) (session.getAttribute("shoppingCart"));
                                                             try {
                                                                 if (shoppingCart != null && shoppingCart.size() > 0) {
-                                                                    //for (ShoppingCartLineItem item : shoppingCart) {
-                                                                    for(int x=0; x<shoppingCart.size();x++){
+                                                                    for (ShoppingCartLineItem item : shoppingCart) {
                                                         %>
                                                         <tr class="cart_table_item">
                                                             <td class="product-remove">
-                                                                <input type="checkbox" name="delete" value="" />
+                                                                <input type="checkbox" name="delete" value="<%=item.getSKU()%>" />
                                                             </td>
                                                             <td class="product-thumbnail">
                                                                 <a href="furnitureProductDetails.jsp">
-                                                                    <img width="100" height="100" alt="" class="img-responsive" src="../../..<%=shoppingCart.get(x).getImageURL()%>">
+                                                                    <img width="100" height="100" alt="" class="img-responsive" src="../../..<%=item.getImageURL()%>">
                                                                 </a>
                                                             </td>
                                                             <td class="product-name">
-                                                                <a class="productDetails" href="furnitureProductDetails.jsp"><%=shoppingCart.get(x).getName()%></a>
+                                                                <a class="productDetails" href="furnitureProductDetails.jsp"><%=item.getName()%></a>
                                                             </td>
                                                             <td class="product-price">
-                                                                $<span class="amount" id="price<%=shoppingCart.get(x).getSKU()%>">
-                                                                    <%=shoppingCart.get(x).getPrice()%>
+                                                                $<span class="amount" id="price<%=item.getSKU()%>">
+                                                                    <%=item.getPrice()%>
                                                                 </span>
                                                             </td>
                                                             <td class="product-quantity">
                                                                 <form enctype="multipart/form-data" method="post" class="cart">
                                                                     <div class="quantity">
-                                                                        <input type="button" class="minus" value="-" onclick="minus('<%=shoppingCart.get(x).getSKU()%>')">
-                                                                        <input type="text" disabled="true" class="input-text qty text" title="Qty" value="" name="quantity" min="1" step="1" id="<%=shoppingCart.get(x).getSKU()%>">
-                                                                        <input type="button" class="plus" value="+" onclick="plus('<%=shoppingCart.get(x).getSKU()%>', '<%=shoppingCart.get(x).getName()%>',<%=shoppingCart.get(x).getPrice()%>, '<%=shoppingCart.get(x).getImageURL()%>')">
+                                                                        <input type="button" class="minus" value="-" onclick="minus('<%=item.getSKU()%>')">
+                                                                        <input type="text" disabled="true" class="input-text qty text" title="Qty" value="<%=item.getQuantity()%>" name="quantity" min="1" step="1" id="<%=item.getSKU()%>">
+                                                                        <input type="button" class="plus" value="+" onclick="plus('<%=item.getSKU()%>', '<%=item.getName()%>',<%=item.getPrice()%>, '<%=item.getImageURL()%>')">
                                                                     </div>
                                                                 </form>
                                                             </td>
                                                             <td class="product-subtotal">
-                                                                $<span class="amount" id="totalPrice<%=shoppingCart.get(x).getSKU()%>">
-                                                                    insert total price here
+                                                                $<span class="amount" id="totalPrice<%=item.getSKU()%>">
+                                                                    <%=item.getPrice() * item.getQuantity()%>
                                                                 </span>
                                                             </td>
                                                         </tr>
-                                                        <%                 }                                                //   }
+                                                        <%                                                                 //   }
+                                                                    }
                                                                 }
                                                             } catch (Exception ex) {
                                                                 System.out.println(ex);
@@ -178,7 +182,17 @@
                                                             </td>
                                                             <td class="product-subtotal">
                                                                 $<span class="amount" id="finalPrice" name="finalPrice">
-                                                                    
+                                                                    <%
+                                                                        if (shoppingCart != null) {
+                                                                            for (ShoppingCartLineItem item : shoppingCart) {
+                                                                                finalPrice += item.getPrice() * item.getQuantity();
+                                                                            }
+
+                                                                    %>
+                                                                    <%=finalPrice%>
+                                                                    <%
+                                                                        }
+                                                                    %>
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -198,8 +212,8 @@
                                                 <div class="col-md-8">
                                                     <br>
                                                     <table>
-                                                        <tbody>
-                                                            <tr>
+
+                                                        <tr>
                                                         <h4 style="text-align: left">Credit Card Payment Details</h4>
                                                         </tr>
                                                         <tr>
@@ -207,7 +221,7 @@
                                                                 <label>Name on Card: </label>
                                                             </td>
                                                             <td style="padding: 5px">
-                                                                <input type="text" class="input-text text" title="name"id="txtName" required>                                                            
+                                                                <input type="text" class="input-text text" name="txtName" title="name"id="txtName" required="true">                                                            
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -215,7 +229,7 @@
                                                                 <label>Card Number: </label>
                                                             </td>
                                                             <td style="padding: 5px">
-                                                                <input type="text" class="input-text text " title="cardno" id="txtCardNo" required>
+                                                                <input type="text" class="input-text text" title="cardno" name="txtCardNo" id="txtCardNo" maxlength="19" required="true">
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -223,7 +237,7 @@
                                                                 <label>CVV/CVC2: </label>
                                                             </td>
                                                             <td style="padding: 5px">
-                                                                <input type="text" class="input-text text " title="securitycode" id="txtSecuritycode" required>
+                                                                <input type="text" class="input-text text " title="securitycode" name="txtSecuritycode"id="txtSecuritycode" maxlength="3" required="true">
                                                             </td>
                                                         </tr>
 
@@ -232,7 +246,7 @@
                                                                 <label>Expiry Date: </label>
                                                             </td>
                                                             <td style="width: 300px">
-                                                                <select style="width: 120px; display: inline-block" class="dropdown-header" title="Month">
+                                                                <select name="month" style="width: 120px; display: inline-block" class="dropdown-header" title="Month">
                                                                     <option>January</option>
                                                                     <option>February</option>
                                                                     <option>March</option>
@@ -246,9 +260,33 @@
                                                                     <option>November</option>
                                                                     <option>December</option>
                                                                 </select>
-                                                                <input type="text" style="width: 60px" class="input-text text" title="year" id="year" required>(eg: 2015)                                                        
+                                                                <input type="text" style="width: 60px" class="input-text text" name="year" title="year" id="year" maxlength="4" required=true"">(eg: 2015)                                                        
                                                             </td>
                                                         </tr>
+                                                        <%
+                                                            /* Boolean condition = true;
+                                                             if (request.getParameter("txtName") == "master" || request.getParameter("txtName") == "Master"){
+                                                             Pattern p = Pattern.compile("([5][1-5]\\d{14}\\b)");
+                                                             Matcher mMatcher = p.matcher(request.getParameter("txtCardNo"));
+                                                             condition = mMatcher.matches();
+                                                         }else if(request.getParameter("txtName") == "visa" || request.getParameter("txtName") =="VISA"){
+                                                                 Pattern p = Pattern.compile("([4]\\d{18}\\b)");
+                                                                 Matcher vMatcher = p.matcher(request.getParameter("txtCardNo"));
+                                                                 condition = vMatcher.matches();}
+                                                         else{
+                                                             condition = false;
+                                                         }
+                                                            
+                                                         if(condition = false){
+                                                             out.print("Please enter a correct fotmate");
+                                                             response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp");
+                                                            
+                                                         }else{
+                                                            
+                                                         }*/
+
+                                                        %>
+
                                                         <tr>
                                                             <td style="">
                                                             </td>
@@ -256,7 +294,7 @@
                                                                 <div align="right"><a href="#makePaymentModal" data-toggle="modal"><button class="btn btn-primary">Make Payment</button></a></div>
                                                             </td>
                                                         </tr>
-                                                        </tbody></table>
+                                                    </table>
                                                 </div>
                                             </form>
                                         </div>
@@ -332,4 +370,3 @@
         </div>
     </body>
 </html>
-

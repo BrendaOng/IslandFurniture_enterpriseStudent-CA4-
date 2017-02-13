@@ -1,4 +1,5 @@
 <%@page import="HelperClasses.Member"%>
+<%@page import="EntityManager.FurnitureEntity"%>
 <%@page import="HelperClasses.Furniture"%>
 <%@page import="java.net.URLDecoder"%>
 <%@page import="java.util.List"%>
@@ -13,6 +14,7 @@
         isMemberLoggedIn = true;
     }
     String category = URLDecoder.decode(request.getParameter("cat"));
+  
     if (category == null) {
         pageContext.forward("/ECommerce_SelectCountry");
     }
@@ -22,6 +24,7 @@
     <body>
         <%
             List<Furniture> furnitures = (List<Furniture>) (session.getAttribute("furnitures"));
+            
             System.out.println("furniture size:" + furnitures.size());
         %>
         <div class="body">
@@ -47,8 +50,10 @@
                         <div class="row">
                             <ul class="products product-thumb-info-list" data-plugin-masonry>
                                 <%
+                                  
                                     try {
-                                         for(int i = 0; i < furnitures.size(); i++){
+                                         if (furnitures != null) {
+                                                                    for (int i = 0; i < furnitures.size(); i++) {
                                 %>
                                 <li class="col-md-3 col-sm-6 col-xs-12 product">
                                     <span class="product-thumb-info">
@@ -63,27 +68,21 @@
                                             <span class="product-thumb-info-act-left"><em>Width: <%=furnitures.get(i).getWidth()%></em></span><br/>
                                             <span class="product-thumb-info-act-left"><em>Price: $<%=furnitures.get(i).getPrice()%>0</em></span>
                                             <br/>
-                                            
                                             <form action="furnitureProductDetails.jsp">
-                                                <input type="hidden" name="sku" value="<%=furnitures.get(i).getSKU()%>"/>
-                                                <input type="hidden" name="id" value="<%=i%>"/>
-                                                <input type="submit" class="btn btn-primary btn-block" value="More Details"/>
-                                                
+                                                <input type="hidden" name="sku" value="<%=furnitures.get(i).getSKU()%>">
+                                                <input type="hidden" name="furnitureNumber" value="<%=i%>">
+                                                <input type="hidden" name="categoryName" value="<%=category%>">
+                                                <input type="submit" class="btn btn-primary btn-block" value="More Details">
                                             </form>
-                                                <form action="shoppingCart.jsp">
-                                                    <input type="submit" class="btn btn-primary btn-block" value="Add To Cart"/>
- </form>
-                                                <%}%>
-                                                
                                             <%
                                                 if (isMemberLoggedIn == true) {
                                             %>
                                             <form action="../../ECommerce_AddFurnitureToListServlet">
-                                                <input type="hidden" name="id" value="<%=furnitures.get(0).getId()%>"/>
-                                                <input type="hidden" name="SKU" value="<%=furnitures.get(0).getSKU()%>"/>
-                                                <input type="hidden" name="price" value="<%=furnitures.get(0).getPrice()%>"/>
-                                                <input type="hidden" name="name" value="<%=furnitures.get(0).getName()%>"/>
-                                                <input type="hidden" name="imageURL" value="<%=furnitures.get(0).getImageUrl()%>"/>
+                                                <input type="hidden" name="id" value="<%=furnitures.get(i).getId()%>"/>
+                                                <input type="hidden" name="SKU" value="<%=furnitures.get(i).getSKU()%>"/>
+                                                <input type="hidden" name="price" value="<%=furnitures.get(i).getPrice()%>"/>
+                                                <input type="hidden" name="name" value="<%=furnitures.get(i).getName()%>"/>
+                                                <input type="hidden" name="imageURL" value="<%=furnitures.get(i).getImageUrl()%>"/>
                                                 <input type="submit" name="btnEdit" class="btn btn-primary btn-block" value="Add To Cart"/>
                                             </form>
                                             <%
@@ -92,13 +91,14 @@
                                         </span>
                                     </span>
                                 </li>
-                                <%
+                                <% }
+                                }
                                     } catch (Exception ex) {
                                         System.out.println(ex);
                                         ex.printStackTrace();
                                     }
                                 %>
-                             </ul>
+                            </ul>
                         </div>
                         <hr class="tall">
                     </div>
@@ -108,4 +108,3 @@
         </div>
     </body>
 </html>
- 

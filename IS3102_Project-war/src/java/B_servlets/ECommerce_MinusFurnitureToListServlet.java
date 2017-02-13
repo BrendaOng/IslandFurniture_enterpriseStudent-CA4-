@@ -7,6 +7,7 @@ package B_servlets;
 
 import HelperClasses.ShoppingCartLineItem;
 import java.io.IOException;
+import java.io.PrintWriter;
 import static java.lang.System.out;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -15,19 +16,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  *
- * @author AnitaDaffney
+ * @author Enidtingz
  */
-@WebServlet(name = "ECommerce_AddFurnitureToListServlet", urlPatterns = {"/ECommerce_AddFurnitureToListServlet"})
-public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
+@WebServlet(name = "ECommerce_MinusFurnitureToListServlet", urlPatterns = {"/ECommerce_MinusFurnitureToListServlet"})
+public class ECommerce_MinusFurnitureToListServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,71 +36,32 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
-        try {
+        
+       try {
             HttpSession session = request.getSession();
-            Long countryID = (Long) session.getAttribute("countryID");
             ArrayList<ShoppingCartLineItem> current = (ArrayList<ShoppingCartLineItem>) (session.getAttribute("shoppingCart"));
             ArrayList<ShoppingCartLineItem> Shoppingcart = new ArrayList<ShoppingCartLineItem>();
             
-            ShoppingCartLineItem cart = new ShoppingCartLineItem();
+            String sku= request.getParameter("SKU");
             
-            cart.setId(request.getParameter("id"));
-            cart.setSKU(request.getParameter("SKU"));
-            cart.setName(request.getParameter("name"));
-            cart.setImageURL(request.getParameter("imageURL"));
-            cart.setPrice(Double.parseDouble(request.getParameter("price")));
-            cart.setCountryID(countryID);
-            cart.setQuantity(+1);
-          
-            Shoppingcart.add(cart);    
-            
-            if (current != null) {
-
-                for (ShoppingCartLineItem items : current) {
-                    
-                    if(items.getSKU().equals(cart.getSKU()))
-                    {
-                        Shoppingcart.remove(cart);
-                        items.setQuantity(items.getQuantity()+1);
-                        Shoppingcart.add(items);
-                    }                 
-                    else
-                    {
-                        Shoppingcart.add(items);
-                    }
-                }
-                
+            for (ShoppingCartLineItem items : current)
+            {
+             if (!items.getSKU().equals(sku)){
+                 Shoppingcart.add(items);
+             } else if(items.getQuantity() == 1){
+                 response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg=Quantity cannot be less than 1");
+             }  else{
+                 items.setQuantity(items.getQuantity()-1);
+                 Shoppingcart.add(items);
+                 session.setAttribute("shoppingCart", Shoppingcart);
+                response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg=Item successfully removed from the cart!");
+             }
             }
-            session.setAttribute("shoppingCart", Shoppingcart);
-            response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?goodMsg=Item Successfully added into the cart!");
         } catch (Exception ex) {
             out.println("\n\n " + ex.getMessage());
-        }
+        }   
     }
-
-    public int getQuantityOfSKU(Long CountryID, String SKU) {
-        try {
-            Client client = ClientBuilder.newClient();
-            WebTarget target = client
-                    .target("\"http://localhost:8080/WebService_Student-CA4-/webresources/entity.storeentity\"")
-                    .path("getQuantity")
-                    .queryParam("countryID", CountryID)
-                    .queryParam("SKU", SKU);
-            Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
-            Response response = invocationBuilder.get();
-            System.out.println("status: " + response.getStatus());
-
-            String result = (String) response.readEntity(String.class);
-            System.out.println("Result returned from ws: " + result);
-            return Integer.parseInt(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-
-    }
-
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
